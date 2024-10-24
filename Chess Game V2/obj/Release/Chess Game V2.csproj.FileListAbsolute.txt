@@ -1,0 +1,11 @@
+V:\P218428\Chess Game V2\bin\Release\Chess Game V2.exe.config
+V:\P218428\Chess Game V2\bin\Release\Chess Game V2.exe
+V:\P218428\Chess Game V2\bin\Release\Chess Game V2.pdb
+V:\P218428\Chess Game V2\obj\Release\Chess Game V2.csproj.AssemblyReference.cache
+V:\P218428\Chess Game V2\obj\Release\Chess Game V2.csproj.SuggestedBindingRedirects.cache
+V:\P218428\Chess Game V2\obj\Release\Chess_Game_V2.Form1.resources
+V:\P218428\Chess Game V2\obj\Release\Chess_Game_V2.Properties.Resources.resources
+V:\P218428\Chess Game V2\obj\Release\Chess Game V2.csproj.GenerateResource.cache
+V:\P218428\Chess Game V2\obj\Release\Chess Game V2.csproj.CoreCompileInputs.cache
+V:\P218428\Chess Game V2\obj\Release\Chess Game V2.exe
+V:\P218428\Chess Game V2\obj\Release\Chess Game V2.pdb

@@ -10,30 +10,58 @@ namespace Chess_Game_V2.Classes
     public class Pawn:Piece
     {
         public Pawn(int x, int y, PieceColour colour) : base(x, y, colour, 1) { }
-        public override List<string> GetValidMoves(Board board, int x, int y)
+        public override List<int[]> GetValidMoves(Board board, int x, int y)
         {
-            var validMoves = new List<string>();
+            var validMoves = new List<int[]>();
             int direction = (this.Colour == PieceColour.White) ? 1 : -1;
-            int forwardPosition = y + direction;
-            int[,] diagonalMoves;
+            int[] forwardPosition = { x, y + direction };
+            int[] diagonalMoves;
 
-            if((this.Colour == PieceColour.White && y == 6) || (this.Colour == PieceColour.Black && y == 1))
+            if (board.IsPositionEmpty(board, x, y + direction) == true)
             {
-                int doubleForwardPosition = forwardPosition*2;
+                validMoves.Add(forwardPosition);
             }
-            
-            if ((this.Colour == PieceColour.White && board.IsPositionEmpty(board, x+1, y+1) == true) || (this.Colour == PieceColour.White && board.IsPositionEmpty(board, x-1, y+1) == true) || (this.Colour == PieceColour.Black && board.IsPositionEmpty(board, x+1, y-1)) || (this.Colour == PieceColour.Black && board.IsPositionEmpty(board, x-1, y-1)))
+            if ((this.Colour == PieceColour.White && y == 1) || (this.Colour == PieceColour.Black && y == 6))
             {
-                if(this.Colour == PieceColour.White)
+                if ((board.IsPositionEmpty(board, x, y + direction) == true) && (board.IsPositionEmpty(board, x, y + (2 * direction)) == true))
                 {
-                    diagonalMoves = new int[2, 2] { { 1, -1 }, { 1, 1 } };
-                }
-                else
-                {
-                    diagonalMoves = new int[2, 2] { { -1, 1 }, { -1,-1 } };
+                    int[] doubleForwardPosition = { x, y + (2 * direction) };
+                    validMoves.Add(doubleForwardPosition);
                 }
             }
-            return null;
+            if (x-1 >= 0 && x+1 < 8)
+            {
+                if (((Colour == PieceColour.White) && board.IsPositionEmpty(board, x + 1, y + 1) == false) || (Colour == PieceColour.White && board.IsPositionEmpty(board, x - 1, y + 1) == false) || ((Colour == PieceColour.Black && board.IsPositionEmpty(board, x + 1, y - 1)) == false) || ((Colour == PieceColour.Black && board.IsPositionEmpty(board, x - 1, y - 1)) == false))
+                {
+                    if (Colour == PieceColour.White)
+                    {
+                        if (board.IsOpponentPiece(board, x + 1, y + 1, Colour) == true)
+                        {
+                            diagonalMoves = new int[2] { x + 1, y + 1 };
+                            validMoves.Add(diagonalMoves);
+                        }
+                        if (board.IsOpponentPiece(board, x - 1, y + 1, Colour) == true)
+                        {
+                            diagonalMoves = new int[2] { x - 1, y + 1 };
+                            validMoves.Add(diagonalMoves);
+                        }
+                    }
+                    else
+                    {
+                        if (board.IsOpponentPiece(board, x + 1, y - 1, Colour) == true)
+                        {
+                            diagonalMoves = new int[2] { x + 1, y - 1 };
+                            validMoves.Add(diagonalMoves);
+                        }
+                        if (board.IsOpponentPiece(board, x - 1, y - 1, Colour) == true)
+                        {
+                            diagonalMoves = new int[2] { x - 1, y - 1 };
+                            validMoves.Add(diagonalMoves);
+                        }
+                    }
+                }
+            }      
+            return validMoves;
         }
     }
 }

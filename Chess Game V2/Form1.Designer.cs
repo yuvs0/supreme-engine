@@ -33,6 +33,7 @@
             this.pgnGameNotation = new System.Windows.Forms.TextBox();
             this.saveGame = new System.Windows.Forms.Button();
             this.chessBoardPanel = new System.Windows.Forms.Panel();
+            this.currentTurn = new System.Windows.Forms.Label();
             this.SuspendLayout();
             // 
             // undoMove
@@ -52,6 +53,7 @@
             this.newGame.TabIndex = 2;
             this.newGame.Text = "New Game";
             this.newGame.UseVisualStyleBackColor = true;
+            this.newGame.Click += new System.EventHandler(this.newGame_Click);
             // 
             // pgnGameNotation
             // 
@@ -76,11 +78,21 @@
             this.chessBoardPanel.Size = new System.Drawing.Size(480, 480);
             this.chessBoardPanel.TabIndex = 5;
             // 
+            // currentTurn
+            // 
+            this.currentTurn.AutoSize = true;
+            this.currentTurn.Location = new System.Drawing.Point(586, 567);
+            this.currentTurn.Name = "currentTurn";
+            this.currentTurn.Size = new System.Drawing.Size(100, 13);
+            this.currentTurn.TabIndex = 6;
+            this.currentTurn.Text = "Current Turn: White";
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(971, 667);
+            this.Controls.Add(this.currentTurn);
             this.Controls.Add(this.chessBoardPanel);
             this.Controls.Add(this.saveGame);
             this.Controls.Add(this.pgnGameNotation);
@@ -100,6 +112,7 @@
         private System.Windows.Forms.TextBox pgnGameNotation;
         private System.Windows.Forms.Button saveGame;
         private System.Windows.Forms.Panel chessBoardPanel;
+        private System.Windows.Forms.Label currentTurn;
     }
 }
 

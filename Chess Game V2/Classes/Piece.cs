@@ -26,6 +26,6 @@ namespace Chess_Game_V2.Classes
             Colour = colour;
             ID = iD;
         }
-        public abstract List<string> GetValidMoves(Board board, int x, int y);
+        public abstract List<int[]> GetValidMoves(Board board, int x, int y);
     }
 }

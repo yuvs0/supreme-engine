@@ -3,8 +3,11 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
+using System.Data.Common;
 using System.Drawing;
 using System.Linq;
+using System.Runtime.CompilerServices;
+using System.Security.Principal;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
@@ -14,9 +17,15 @@ namespace Chess_Game_V2
     public partial class Form1 : Form
     {
         private Board board;
-        private Piece selectedPiece;
-        private int selectedPieceInt;
+        int pieceSelectedX;
+        int pieceSelectedY;
         PictureBox[,] boxes = new PictureBox[8, 8];
+        public enum Turn
+        {
+            White,
+            Black
+        }
+        Turn turn = Turn.White;
         public Form1()
         {
             InitializeComponent();
@@ -25,6 +34,10 @@ namespace Chess_Game_V2
         {
             loadChessBoard();
             
+        }
+        private void newGame_Click(object sender, EventArgs e)
+        {
+
         }
         private void loadChessBoard()
         {
@@ -39,12 +52,12 @@ namespace Chess_Game_V2
                         Height = 60,
                         BorderStyle = BorderStyle.FixedSingle,
                         BackColor = (row + column) % 2 == 0 ? Color.White : Color.Gray,
-                        Name = $"pictureBox{row}{column}",
-                        Location = new Point(row * 60, column * 60)
+                        Name = $"{row}{column}",
+                        Location = new Point((row) * 60, (7-column) * 60)
                     };
                     boxes[row,column] = pictureBox;
                     chessBoardPanel.Controls.Add(pictureBox);
-                    pictureBox.MouseClick += PictureBox_MouseClick; ;
+                    pictureBox.MouseClick += PictureBox_MouseClick;
                 }
             }
             UpdatePieces();
@@ -109,8 +122,7 @@ namespace Chess_Game_V2
                     }
                 }
             }
-            Bitmap sizedImageToDisplay = new Bitmap(imageToDisplay, new Size(55, 55));
-            return sizedImageToDisplay;
+            return imageToDisplay;
         }
         private void UpdatePieces()
         {
@@ -127,45 +139,85 @@ namespace Chess_Game_V2
                     {
                         boxes[row, col].Image = null;
                     }
+                    boxes[row,col].BackColor = (row + col) % 2 == 0 ? Color.White : Color.Gray;
                 } 
             }
+            CheckForCheck();
             this.Refresh();
         }
         private void PictureBox_MouseClick(object sender, MouseEventArgs e)
         {
-            Piece holdPiece = selectedPiece;
-            PictureBox clickedBox = sender as PictureBox;
-            if (clickedBox != null)
+            if (sender is PictureBox)
             {
-                for (int i = 0; i < 8; i++)
+                string pictureBoxName = ((PictureBox)sender).Name;
+                Color pictureBoxColour = ((PictureBox)sender).BackColor;
+                int x = int.Parse(Convert.ToString(pictureBoxName[0]));
+                int y = int.Parse(Convert.ToString(pictureBoxName[1]));
+                Piece piece = board.GetPiece(x, y);
+                if (piece != null)
                 {
-                    for (int j = 0; j < 8; j++)
+                    if ((Convert.ToString(turn) != Convert.ToString(piece.Colour)) && (pictureBoxColour == Color.Yellow))
                     {
-                        if (boxes[i, j] == clickedBox)
+                        PieceToMove(x, y);
+                    }
+                    else if (Convert.ToString(turn) == Convert.ToString(piece.Colour))
+                    {
+                        HighlightValidMoves(piece, x, y);
+                        if (piece == null && pictureBoxColour == Color.Yellow)
                         {
-                            if (selectedPiece == board.GetPiece(i, j))
-                            {
-                                selectedPiece = null;
-                            }
-                            else
-                            {
-                                selectedPiece = board.GetPiece(i, j);
-                            }
+                            PieceToMove(x, y);
                         }
                     }
                 }
-            }
-            if (holdPiece != selectedPiece)
-            {
-                PieceToMove(holdPiece, selectedPiece);
+                else
+                {
+                    if (piece == null && pictureBoxColour == Color.Yellow)
+                    {
+                        PieceToMove(x, y);
+                    }
+                }
             }
         }
-        private void PieceToMove(Piece pieceToUse, Piece pieceToMove)
+        public Board GetBoard()
         {
-            int[] positionToUse = board.GetPiece(pieceToUse);
-            int[] positionToMove = board.GetPiece(pieceToMove);
-            board.MovePiece(positionToUse[0], positionToUse[1], positionToMove[0], positionToMove[1]);
+            return board;
+        }
+        private void PieceToMove(int x, int y)
+        {
+            board.MovePiece(pieceSelectedX, pieceSelectedY, x, y);
+            turn = turn == Turn.White ? Turn.Black : Turn.White;
+            currentTurn.Text = turn == Turn.White ? "Current Turn: White" : "Current Turn: Black";
             UpdatePieces();
+        }
+        private void CheckForCheck()
+        {
+            bool isCheck = board.IsCheck(turn == Turn.White ? PieceColour.Black : PieceColour.White);
+            if (isCheck)
+            {
+                int[] kingPosition = board.GetKingPosition(turn == Turn.White ? PieceColour.White : PieceColour.Black);
+                boxes[kingPosition[0], kingPosition[1]].BackColor = Color.Red;
+                this.Refresh();
+            }
+        }
+        private bool CheckForCheck(int i)
+        {
+            bool isCheck = board.IsCheck(turn == Turn.White ? PieceColour.Black : PieceColour.White);
+            return isCheck;
+        }
+        private void HighlightValidMoves(Piece piece, int x, int y) // make a undo move method so you can handle checks, and moves after check
+        {
+            UpdatePieces();
+            if (piece != null)
+            {
+                pieceSelectedX = x;
+                pieceSelectedY = y;
+                List<int[]> validMoves = piece.GetValidMoves(board, x, y);
+                for (int i = 0; i < validMoves.Count; i++)
+                {
+                    int[] validPosition = validMoves[i];
+                    boxes[validPosition[0], validPosition[1]].BackColor = Color.Yellow;
+                }
+            }
         }
     }
 }
